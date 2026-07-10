@@ -16,7 +16,7 @@ const getEmployees = async (req, res) => {
   console.log("✅ getEmployees controller called");
 
   try {
-    const employees = await Employee.find();
+    const employees = await Employee.find().sort({ createdAt: -1 });
 
     console.log(employees);
 
@@ -29,4 +29,55 @@ const getEmployees = async (req, res) => {
     });
   }
 };
-module.exports ={createEmployee, getEmployees};
+
+const getEmployeeById = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const employee = await Employee.findById(id);
+
+    if (!employee) {
+      return res.status(404).json({
+        message: "Employee not found",
+      });
+    }
+
+    res.status(200).json(employee);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+const updateEmployee = async (req, res) => {
+  try {
+
+    const id = req.params.id;
+
+    const employee = await Employee.findByIdAndUpdate(
+      id,
+      req.body,
+      {
+        new: true,
+        runValidators: true
+      }
+    );
+
+    if (!employee) {
+      return res.status(404).json({
+        message: "Employee not found"
+      });
+    }
+
+    res.status(200).json(employee);
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: error.message
+    });
+
+  }
+};
+module.exports ={createEmployee, getEmployees, getEmployeeById, updateEmployee};
