@@ -13,11 +13,13 @@ res.status(500).json({
 };
 
 const getEmployees = async (req, res) => {
-  console.log("✅ getEmployees controller called");
-
+const page= parseInt(req.query.page) || 1;
+const limit= parseInt(req.query.limit) || 10;
+const skip = (page - 1) * limit;
   try {
-    const employees = await Employee.find().sort({ createdAt: -1 });
-
+const employees = await Employee.find()
+  .skip(skip)
+  .limit(limit);
     console.log(employees);
 
     res.status(200).json(employees);
